@@ -1,0 +1,17 @@
+*.o 
+*.d 
+*.crf 
+*.axf 
+*.htm 
+*.dep 
+*.lnp 
+*.lst 
+*.map 
+*.bak 
+*.iex 
+*.hex 
+*.uvguix.* 
+JLinkLog.txt 
+*.scvd 
+/MDK-ARM/ModbusSlave/ 
+/MDK-ARM/DebugConfig/
