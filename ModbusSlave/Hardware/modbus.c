@@ -24,9 +24,9 @@ static void handle_write_single_coil(void);
 static void send_exception(modbus_func_code func_code, modbus_ex_code ex_code);
 static void send_response(uint8_t *buf, uint8_t len);
 
-void modbus_init(UART_HandleTypeDef* huart)
+void modbus_init(UART_HandleTypeDef* huart,DMA_HandleTypeDef* dma)
 {
- uart_transport_init(huart);
+ uart_transport_init(huart,dma);
 }
 
 //@brief:modbus crc校验函数

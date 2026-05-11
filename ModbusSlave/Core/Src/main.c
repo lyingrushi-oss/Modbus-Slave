@@ -18,15 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "modbus.h"
-
+#include "dht11_hal.h"
+#include "dht11.h"
 #include <string.h>
 #include <stdio.h>
 /* USER CODE END Includes */
@@ -98,12 +99,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 	//初始化modbus
-	modbus_init(&huart1);
-	// 先给寄存器手动赋固定值，验证读�?�路
+	modbus_init(&huart1,&hdma_usart1_rx);
+	// 先给寄存器手动赋固定值，验证读鿚�?
 	hold_reg[0] = 1234;
 	hold_reg[1] = 5678;
 	input_reg[0]   = 9999;
@@ -134,16 +136,44 @@ HAL_UART_Transmit(&huart1, (uint8_t*)debug_buf, strlen(debug_buf), HAL_MAX_DELAY
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//		//DWT CYCCNT测试代码
+//		dht11_hal_delay_init();//初始�?
+//		uint32_t start=DWT->CYCCNT;
+//		dht11_hal_delay_us(20);
+//		uint32_t delay_result=DWT->CYCCNT-start;
+//		char ch[20];
+//		sprintf(ch,"take %u ticks %u us",delay_result,delay_result/(SystemCoreClock/1000000));
+//		HAL_UART_Transmit(&huart1,(uint8_t*)ch,strlen(ch),1000);
+		//dht11_hal_delay_init();
+		dht11_hal_delay_init();
+//		DHT11_Data_t DHT11;
+//		
+//		dht11_read(&DHT11);
+//		uint8_t res[2];
+//		res[0]=DHT11.humi_int;
+//		res[1]=DHT11.temp_int;
+//		char ch[20];
+//		sprintf(ch,"temp:%d,humi:%d",res[1],res[0]);
+//		HAL_UART_Transmit(&huart1,(uint8_t*)ch,strlen(ch),1000);
+		
+		uint32_t last_time=0;
+		DHT11_Data_t DHT11;
   while (1)
   {
-    /* USER CODE END WHILE */
 			modbus_poll();
-//		 uint8_t test_byte = 0;
-//    if (HAL_UART_Receive(&huart1, &test_byte, 1, 100) == HAL_OK)
-//    {
-//        // 收到了，原样发回去
-//        HAL_UART_Transmit(&huart1, &test_byte, 1, 100);
-//    }
+		if(HAL_GetTick()-last_time>2000)
+		{
+			//2sdht11读一次数�?
+			if(dht11_read(&DHT11)==DHT11_OK)
+			{
+				//读取到数据，写入寄存�?
+				hold_reg[0]=(DHT11.humi_int<<8)|DHT11.humi_dec;
+				hold_reg[1]=(DHT11.	temp_int<<8)|DHT11.temp_dec;
+			}
+			last_time = HAL_GetTick();
+		}
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

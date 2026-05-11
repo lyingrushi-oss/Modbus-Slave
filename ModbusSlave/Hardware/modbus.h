@@ -31,7 +31,7 @@ typedef enum {
 } modbus_ex_code;
 
 //对外函数接口
-void modbus_init(UART_HandleTypeDef* huart);
+void modbus_init(UART_HandleTypeDef* huart,DMA_HandleTypeDef* dma);
 uint16_t modbus_crc16(uint8_t* buf,uint16_t len);
 void modbus_poll(void);
 
