@@ -620,6 +620,16 @@
               <FileType>1</FileType>
               <FilePath>..\Hardware\uart_transtport.c</FilePath>
             </File>
+            <File>
+              <FileName>ring_buffer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\ring_buffer.c</FilePath>
+            </File>
+            <File>
+              <FileName>ring_buffer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Hardware\ring_buffer.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
